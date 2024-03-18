@@ -37,7 +37,7 @@ pub struct DistributingIterator<T, ID> {
     pos: usize,
     original_size: usize,
     spread: usize,
-    queue_per_id: Option<FnvHashMap<ID, VecDeque<T>>>,
+    queue_per_id: FnvHashMap<ID, VecDeque<T>>,
     last_pos: IndexMap<ID, usize>,
     iterator_reached_end: bool,
     id_func: Box<dyn Fn(&T) -> ID + Send>,
@@ -45,7 +45,7 @@ pub struct DistributingIterator<T, ID> {
 
 impl<T, ID> DistributingIterator<T, ID>
 where
-    ID: Eq + std::hash::Hash,
+    ID: Eq + std::hash::Hash + Clone,
 {
     pub fn new(
         data: VecDeque<T>,
@@ -59,7 +59,7 @@ where
             spread,
             pos: 0,
             id_func: Box::new(id_func),
-            queue_per_id: Some(FnvHashMap::default()),
+            queue_per_id: FnvHashMap::default(),
             last_pos: IndexMap::default(),
             iterator_reached_end: false,
         }
@@ -80,17 +80,17 @@ where
     }
 
     fn get_next_item(&mut self) -> Option<T> {
-        let mut queue_per_id = self.queue_per_id.take().unwrap();
         let mut adjust_spread = false;
 
         let result = loop {
             let mut result = None;
-            for id in self.sorted_spreadable_ids() {
-                match queue_per_id.get_mut(id) {
+            let ids: Vec<ID> = self.sorted_spreadable_ids().map(|id| id.clone()).collect();
+            for id in ids.iter() {
+                match self.queue_per_id.get_mut(id) {
                     Some(queue) => {
                         if let Some(item) = queue.pop_front() {
                             if self.iterator_reached_end && queue.is_empty() {
-                                queue_per_id.remove(id);
+                                self.queue_per_id.remove(id);
                                 adjust_spread = true
                             }
                             result = Some(item);
@@ -105,7 +105,7 @@ where
             }
 
             if self.iterator_reached_end {
-                if queue_per_id.values().flatten().any(|_| true) {
+                if self.queue_per_id.values().flatten().any(|_| true) {
                     panic!(
                         "Nothing can be returned even though the queue is not empty. This is a bug"
                     );
@@ -121,22 +121,21 @@ where
                         break Some(item);
                     } else {
                         // queue_per_id.entry(id).or_default().push_back(item);
-                        queue_per_id
+                        self.queue_per_id
                             .entry(id)
                             .or_insert_with(|| VecDeque::with_capacity(100))
                             .push_back(item);
                     }
                 }
                 None => {
-                    self.spread = Self::calculate_spread(&queue_per_id);
+                    self.spread = Self::calculate_spread(&self.queue_per_id);
                     self.iterator_reached_end = true;
                 }
             }
         };
         if adjust_spread {
-            self.spread = Self::calculate_spread(&queue_per_id);
+            self.spread = Self::calculate_spread(&self.queue_per_id);
         }
-        self.queue_per_id = Some(queue_per_id);
         result
     }
 
@@ -158,7 +157,7 @@ where
 impl<T, ID> Iterator for DistributingIterator<T, ID>
 where
     T: std::fmt::Debug,
-    ID: Eq + std::hash::Hash + std::fmt::Debug,
+    ID: Eq + std::hash::Hash + std::fmt::Debug + Clone,
 {
     type Item = T;
 
@@ -222,5 +221,13 @@ mod tests {
                 Item { id: 1 },
             ]
         );
+    }
+
+    #[test]
+    fn test_empty_array() {
+        let data: Vec<Item> = vec![];
+        let iterator = DistributingIterator::new(data.into(), 3, |item| item.id);
+        let data: Vec<_> = iterator.collect();
+        assert_eq!(data, vec![]);
     }
 }

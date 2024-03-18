@@ -2,10 +2,10 @@ use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use std::collections::VecDeque;
 
-pub fn distribute<T, ID>(
-    data: &[T],
+pub fn distribute<'a, T: 'a, ID>(
+    data: &'a [T],
     mut spread: usize,
-    id_func: impl Fn(&T) -> ID + Send + 'static,
+    id_func: impl Fn(&'a T) -> ID + Send + 'static,
 ) -> Vec<usize>
 where
     ID: Eq + std::hash::Hash,
@@ -89,6 +89,11 @@ where
         }
     }
     result
+}
+
+/// Distribute items that are themselves IDs
+pub fn distribute_ids<T>(data: &[T], spread: usize) -> Vec<usize> where T: Eq + std::hash::Hash, {
+    distribute(data, spread, |item| item)
 }
 
 fn calculate_spread<T, ID>(queue_per_id: &FnvHashMap<ID, VecDeque<T>>) -> usize {

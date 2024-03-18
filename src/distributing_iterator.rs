@@ -146,7 +146,7 @@ where
 mod tests {
     use super::*;
 
-    #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+    #[derive(Debug, PartialEq)]
     struct Item {
         id: u64,
     }

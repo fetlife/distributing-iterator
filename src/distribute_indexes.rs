@@ -118,4 +118,16 @@ mod tests {
             vec![0, 3, 4, 1, 6, 5, 2, 7, 8, 10, 9, 12, 11, 13, 14]
         );
     }
+
+    #[test]
+    fn test_distribute2() {
+        let data = vec!["Picture", "Post", "Video", "Video", "Picture", "Post", "Picture", "Picture", "Video"];
+        let result = distribute_ids(&data, 3);
+        let result_with_labels = result
+            .iter()
+            .map(|idx| data[*idx])
+            .collect::<Vec<_>>();
+        assert_eq!(result_with_labels, vec!["Picture", "Post", "Video", "Picture", "Post", "Video", "Picture", "Video", "Picture"]);
+        assert_eq!(result, vec![0, 1, 2, 4, 5, 3, 6, 8, 7]);
+    }
 }

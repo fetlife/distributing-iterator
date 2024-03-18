@@ -1,5 +1,5 @@
+use anyhow::{Context, Result};
 use std::collections::VecDeque;
-use anyhow::{Result, Context};
 
 use crate::distributing_iterator;
 use csv::ByteRecord;
@@ -11,14 +11,14 @@ pub fn distribute(data: &str, field: &str, spread: u64) -> Result<String> {
     let headers = csv.headers()?.clone();
     let field_index = headers
         .iter()
-        .position(|header| header == field).context(format!("field `{field}` not found in CSV headers"))?;
+        .position(|header| header == field)
+        .context(format!("field `{field}` not found in CSV headers"))?;
     let data = csv
         .into_byte_records()
         .map(|record| record.map_err(anyhow::Error::from))
         .collect::<Result<VecDeque<_>>>()?;
     let id_func = move |item: &ByteRecord| item[field_index].to_vec();
-    let iterator =
-        distributing_iterator::DistributingIterator::new(data, spread as usize, id_func);
+    let iterator = distributing_iterator::DistributingIterator::new(data, spread as usize, id_func);
     let data: Vec<_> = iterator.collect();
     let mut wtr = csv::Writer::from_writer(vec![]);
     wtr.write_record(&headers).context("writing headers")?;

@@ -2,7 +2,37 @@ use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use std::collections::VecDeque;
 
-pub struct DistributionIterator<T, ID> {
+/// ```rust
+/// use distributing_iterator::DistributingIterator;
+///
+/// #[derive(Debug, PartialEq)]
+/// struct Item {
+///     id: u64,
+/// }
+///
+/// let data = vec![
+///     Item { id: 1 },
+///     Item { id: 1 },
+///     Item { id: 1 },
+///     Item { id: 2 },
+///     Item { id: 2 },
+///     Item { id: 2 },
+///     Item { id: 3 },
+///     Item { id: 3 },
+///     Item { id: 3 },
+/// ];
+/// let iterator = DistributingIterator::new(data.into(), 3, |item| item.id);
+/// let result: Vec<Item> = iterator.collect();
+/// assert_eq!(
+///     result,
+///     vec![
+///         Item { id: 1 }, Item { id: 2 }, Item { id: 3 },
+///         Item { id: 1 }, Item { id: 2 }, Item { id: 3 },
+///         Item { id: 1 }, Item { id: 2 }, Item { id: 3 },
+///     ]
+/// );
+/// ```
+pub struct DistributingIterator<T, ID> {
     data: VecDeque<T>,
     pos: usize,
     original_size: usize,
@@ -13,7 +43,7 @@ pub struct DistributionIterator<T, ID> {
     id_func: Box<dyn Fn(&T) -> ID + Send>,
 }
 
-impl<T, ID> DistributionIterator<T, ID>
+impl<T, ID> DistributingIterator<T, ID>
 where
     ID: Eq + std::hash::Hash,
 {
@@ -125,7 +155,7 @@ where
     }
 }
 
-impl<T, ID> Iterator for DistributionIterator<T, ID>
+impl<T, ID> Iterator for DistributingIterator<T, ID>
 where
     T: std::fmt::Debug,
     ID: Eq + std::hash::Hash + std::fmt::Debug,
@@ -146,7 +176,7 @@ where
 mod tests {
     use super::*;
 
-    #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+    #[derive(Debug, PartialEq, Eq)]
     struct Item {
         id: u64,
     }
@@ -170,7 +200,7 @@ mod tests {
             Item { id: 3 },
             Item { id: 3 },
         ];
-        let iterator = DistributionIterator::new(data.into(), 3, |item| item.id);
+        let iterator = DistributingIterator::new(data.into(), 3, |item| item.id);
         let data: Vec<_> = iterator.collect();
         assert_eq!(
             data,

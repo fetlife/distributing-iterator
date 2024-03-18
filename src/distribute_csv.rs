@@ -18,7 +18,7 @@ pub fn distribute(data: &str, field: &str, spread: u64) -> Result<String> {
         .collect::<Result<VecDeque<_>>>()?;
     let id_func = move |item: &ByteRecord| item[field_index].to_vec();
     let iterator =
-        distributing_iterator::DistributionIterator::new(data, spread as usize, id_func);
+        distributing_iterator::DistributingIterator::new(data, spread as usize, id_func);
     let data: Vec<_> = iterator.collect();
     let mut wtr = csv::Writer::from_writer(vec![]);
     wtr.write_record(&headers).context("writing headers")?;

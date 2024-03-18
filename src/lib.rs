@@ -4,4 +4,4 @@ mod distributing_iterator;
 mod ruby_ext;
 
 pub use distribute_csv::distribute as distribute_csv;
-pub use distributing_iterator::DistributionIterator;
+pub use distributing_iterator::DistributingIterator;

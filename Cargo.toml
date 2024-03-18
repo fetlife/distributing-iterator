@@ -1,0 +1,29 @@
+[package]
+name = "distributing-iterator"
+version = "0.0.1"
+edition = "2021"
+publish = false
+authors = ["Fetlife <dev@fetlife.com>", "Andrii Dmytrenko <refresh.xss@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+magnus = { version="0.6.2", optional = true }
+csv = "*"
+fnv = "1.0.7"
+indexmap = "2.2.5"
+anyhow = "1.0.81"
+
+[dev-dependencies]
+criterion = { version = "0.5.1", features = ["html_reports"] }
+
+[lib]
+name = "distributing_iterator"
+crate-type = ["cdylib", "lib"]
+
+[features]
+default = ["magnus"]
+
+[[bench]]
+name = "benchmark_large_csv"
+harness = false

@@ -101,6 +101,9 @@ where
                 }
             }
             if result.is_some() {
+                if adjust_spread {
+                    self.spread = Self::calculate_spread(&queue_per_id);
+                }
                 break result;
             }
 
@@ -133,9 +136,6 @@ where
                 }
             }
         };
-        if adjust_spread {
-            self.spread = Self::calculate_spread(&queue_per_id);
-        }
         self.queue_per_id = Some(queue_per_id);
         result
     }

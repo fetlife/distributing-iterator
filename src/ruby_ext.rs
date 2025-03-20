@@ -1,4 +1,4 @@
-use magnus::{error::Result, exception, function, Error, Value};
+use magnus::{error::Result, exception, function, Error};
 
 use crate::{distribute_ids, distribute_csv};
 

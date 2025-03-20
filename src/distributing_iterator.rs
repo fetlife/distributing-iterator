@@ -143,7 +143,7 @@ where
     fn sorted_spreadable_ids(&self) -> impl Iterator<Item = &ID> {
         self.last_pos
             .iter()
-            .filter(|(_id, &last_pos)| self.pos - last_pos >= self.spread)
+            .filter(|&(_id, &last_pos)| self.pos - last_pos >= self.spread)
             .map(|(id, _last_pos)| id)
     }
 

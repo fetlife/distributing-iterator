@@ -2,6 +2,39 @@ use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use std::collections::VecDeque;
 
+/// ```rust
+/// use distributing_iterator::distribute;
+///
+/// #[derive(Clone, Debug, PartialEq)]
+/// struct Item {
+///     id: u64,
+/// }
+///
+/// let data = vec![
+///     Item { id: 1 },
+///     Item { id: 1 },
+///     Item { id: 1 },
+///     Item { id: 2 },
+///     Item { id: 2 },
+///     Item { id: 2 },
+///     Item { id: 3 },
+///     Item { id: 3 },
+///     Item { id: 3 },
+/// ];
+/// let indexes = distribute(&data, 3, |item| item.id);
+/// let result = indexes
+///     .iter()
+///    .map(|idx| data[*idx].clone())
+///    .collect::<Vec<_>>();
+/// assert_eq!(
+///     result,
+///     vec![
+///         Item { id: 1 }, Item { id: 2 }, Item { id: 3 },
+///         Item { id: 1 }, Item { id: 2 }, Item { id: 3 },
+///         Item { id: 1 }, Item { id: 2 }, Item { id: 3 },
+///     ]
+/// );
+/// ```
 pub fn distribute<'a, T: 'a, ID>(
     data: &'a [T],
     mut spread: usize,
@@ -23,7 +56,7 @@ where
             let mut adjust_spread = false;
             let sorted_spreadable_ids = last_pos
                 .iter()
-                .filter(|(_id, &last_pos)| output_pos - last_pos >= spread)
+                .filter(|&(_id, &last_pos)| output_pos - last_pos >= spread)
                 .map(|(id, _last_pos)| id);
             for id in sorted_spreadable_ids {
                 match queue_per_id.get_mut(id) {

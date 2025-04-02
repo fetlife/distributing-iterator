@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "Distributing Iterator"
   spec.description = "Distributing Iterator"
-  spec.homepage = "https://github.com/fetlife/fetlife-web"
+  spec.homepage = "https://github.com/fetlife/distributing-iterator"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "ffi"
   spec.required_rubygems_version = Gem::Requirement.new(">= 3.4.0") if spec.respond_to? :required_rubygems_version=
 
-  spec.metadata = { "github_repo" => "ssh://github.com/fetlife/fetlife-web" }
+  spec.metadata = { "github_repo" => "ssh://github.com/fetlife/distributing-iterator" }
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

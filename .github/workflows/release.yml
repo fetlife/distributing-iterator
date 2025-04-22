@@ -88,6 +88,7 @@ jobs:
 
       - name: Rename gem files with version
         run: |
+          ls -la artifacts/
           mkdir -p release_gems
           for gem in artifacts/distributing_iterator-*.gem/*.gem; do
             platform=$(basename $gem | sed -E 's/distributing_iterator-([^.]+)\.gem/\1/')

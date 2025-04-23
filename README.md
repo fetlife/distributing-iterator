@@ -90,3 +90,25 @@ puts output
 # 3,xyzzy
 
 ```
+
+# Releasing a New Version
+
+To release a new version of the gem:
+
+1. Update the version number in `Cargo.toml` and `lib/distributing_iterator/version.rb`
+2. Create and push a new git tag with the version number (e.g., `v1.0.0`):
+   ```bash
+   git tag 1.0.0
+   git push origin 1.0.0
+   ```
+
+The release workflow will automatically:
+- Build the source gem
+- Compile native gems for multiple platforms:
+  - x86_64 Linux
+  - aarch64 Linux
+  - arm64 macOS
+- Create a GitHub release with all compiled gems
+- Generate release notes based on the commits since the last release
+
+The compiled gems will be available for download from the GitHub release page: https://github.com/fetlife/distributing-iterator/releases

@@ -1,9 +1,8 @@
 name: release
 on:
-  push
-  # push:
-  #   tags:
-  #     - "[0-9]*.[0-9]*.[0-9]*"
+  push:
+    tags:
+      - "[0-9]*.[0-9]*.[0-9]*"
 
 jobs:
   build_gem:
@@ -95,15 +94,15 @@ jobs:
             mv "$gem" "release_gems/distributing_iterator-${platform}-${GEM_VERSION}.gem"
           done
           # Move source gem to release_gems directory
-          mv artifacts/distributing_iterator.gem/*.gem release_gems/
+          mv artifacts/distributing_iterator.gem/*.gem release_gems/distributing_iterator-${GEM_VERSION}.gem
 
           # List all files in release_gems for verification
           echo "Files prepared for release:"
           ls -la release_gems/
 
-      # - name: Create release
-      #   uses: softprops/action-gh-release@v2
-      #   with:
-      #     tag_name: ${{ env.GEM_VERSION }}
-      #     files: release_gems/*.gem
-      #     generate_release_notes: true
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.GEM_VERSION }}
+          files: release_gems/*.gem
+          generate_release_notes: true

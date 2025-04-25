@@ -89,9 +89,10 @@ jobs:
         run: |
           mkdir -p release_gems
           for gem in artifacts/distributing_iterator-*.gem/*.gem; do
-            platform=$(basename $gem | sed -E 's/distributing_iterator-([^.]+)\.gem/\1/')
+            # Extract platform from the original filename
+            platform=$(basename $gem | sed -E 's/distributing_iterator-([^-]+-[^-]+)\.gem/\1/')
+            
 
-            # Construct the target filename: NAME-VERSION-PLATFORM.gem
             target_filename="distributing_iterator-${GEM_VERSION}-${platform}.gem"
             target_path="release_gems/$target_filename"
             mv "$gem" "$target_path"

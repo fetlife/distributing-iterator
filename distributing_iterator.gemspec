@@ -17,20 +17,30 @@ Gem::Specification.new do |spec|
 
   spec.platform = Gem::Platform::RUBY
 
-  # Specify which files should be added to the gem when it is released.
-  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
-  spec.files = Dir["lib/**/*.rb", "src/**/*.rs", "benches/**/*.rs", ".cargo/*", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE.txt"]
+  spec.files = Dir[
+    "lib/**/*.rb",
+    "ext/**/*",
+    "extconf.rb",
+    "src/**/*.rs",
+    "benches/**/*.rs",
+    ".cargo/*",
+    "Cargo.toml",
+    "Cargo.lock",
+    "README.md",
+    "LICENSE"
+  ]
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
-  spec.extensions = ["Cargo.toml"]
+  spec.extensions = ["ext/distributing_iterator/extconf.rb"]
+  spec.add_dependency "rb_sys", "~> 0.9"
   spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "gem-compiler"
-  spec.add_development_dependency "ffi"
+  spec.add_development_dependency "rake-compiler", "~> 1.2"
+  spec.add_development_dependency "minitest", "~> 5.0"
   spec.required_rubygems_version = Gem::Requirement.new(">= 3.4.0") if spec.respond_to? :required_rubygems_version=
 
-  spec.metadata = { "github_repo" => "ssh://github.com/fetlife/distributing-iterator" }
-
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata = {
+    "github_repo" => "ssh://github.com/fetlife/distributing-iterator",
+    "cargo_crate_name" => "distributing-iterator"
+  }
 end

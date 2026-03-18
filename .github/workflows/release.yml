@@ -10,14 +10,14 @@ jobs:
     name: Build source gem
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4
           bundler-cache: true
       - run: bundle exec rake build
       - name: Upload source gem
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: source-gem
           path: pkg/*.gem
@@ -36,7 +36,7 @@ jobs:
           - arm64-darwin
           - x64-mingw-ucrt
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4
@@ -44,7 +44,7 @@ jobs:
       - name: Build native gems
         run: bundle exec rb-sys-dock --platform ${{ matrix.platform }} --build
       - name: Upload native gems
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: native-gem-${{ matrix.platform }}
           path: pkg/*-${{ matrix.platform }}.gem
@@ -67,7 +67,7 @@ jobs:
           echo "GEM_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           path: artifacts
 

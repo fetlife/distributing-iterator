@@ -1,11 +1,11 @@
-use magnus::{error::Result, exception, function, Error};
+use magnus::{error::Result, function, Error, Ruby};
 
 use crate::{distribute_ids, distribute_csv};
 
-fn distribute_csv_ruby(data: String, field: String, spread: u64) -> Result<String> {
+fn distribute_csv_ruby(ruby: &Ruby, data: String, field: String, spread: u64) -> Result<String> {
     match distribute_csv(&data, &field, spread) {
         Ok(result) => Ok(result),
-        Err(e) => Err(Error::new(exception::standard_error(), format!("{:?}", e))),
+        Err(e) => Err(Error::new(ruby.exception_standard_error(), format!("{:?}", e))),
     }
 }
 

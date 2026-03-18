@@ -69,7 +69,7 @@ id,name
 3,xyzzy
 CSV
 
-output = DistributingIterator.distribute(csv, 'id', 3)
+output = DistributingIterator.distribute_csv(csv, 'id', 3)
 
 puts output
 # id,name
@@ -93,13 +93,39 @@ puts output
 
 # Releasing a New Version
 
+To work on the gem locally:
+
+```bash
+bundle install
+bundle exec rake compile
+bundle exec rake test
+```
+
+To build a source gem:
+
+```bash
+bundle exec rake build
+```
+
+To build a native gem for the current platform:
+
+```bash
+bundle exec rake native gem
+```
+
+To build a cross-compiled native gem for a specific platform:
+
+```bash
+bundle exec rb-sys-dock --platform x86_64-linux --build
+```
+
 To release a new version of the gem:
 
 1. Update the version number in `Cargo.toml` and `lib/distributing_iterator/version.rb`
-2. Create and push a new git tag with the version number (e.g., `v1.0.0`):
+2. Create and push a new git tag with the version number (e.g., `0.2.1` or `v0.2.1`):
    ```bash
-   git tag 1.0.0
-   git push origin 1.0.0
+   git tag 0.2.1
+   git push origin 0.2.1
    ```
 
 The release workflow will automatically:
@@ -107,7 +133,9 @@ The release workflow will automatically:
 - Compile native gems for multiple platforms:
   - x86_64 Linux
   - aarch64 Linux
+  - x86_64 macOS
   - arm64 macOS
+  - x64 Windows (UCRT)
 - Create a GitHub release with all compiled gems
 - Generate release notes based on the commits since the last release
 

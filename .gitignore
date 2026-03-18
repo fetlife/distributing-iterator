@@ -2,6 +2,13 @@
 # will have compiled files and executables
 debug/
 target/
+tmp/
+ext/distributing_iterator/Makefile
+ext/distributing_iterator/mkmf.log
+ext/distributing_iterator/.sitearchdir.time
+lib/distributing_iterator/distributing_iterator.bundle
+lib/distributing_iterator/distributing_iterator.so
+lib/distributing_iterator/distributing_iterator.dll
 
 # Remove Cargo.lock from gitignore if creating an executable, leave it for libraries
 # More information here https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
@@ -14,3 +21,5 @@ target/
 *.pdb
 
 pkg/
+.DS_Store
+Gemfile.lock

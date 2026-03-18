@@ -3,106 +3,78 @@ on:
   push:
     tags:
       - "[0-9]*.[0-9]*.[0-9]*"
+      - "v[0-9]*.[0-9]*.[0-9]*"
 
 jobs:
-  build_gem:
+  build_source_gem:
     name: Build source gem
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby-pkgs@v1
+      - uses: actions/checkout@v6.0.2
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4
-      - run: sudo apt-get update
-      - run: gem update --system
-      - run: rake gem
+          bundler-cache: true
+      - run: bundle exec rake build
       - name: Upload source gem
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.0
         with:
-          name: distributing_iterator.gem
+          name: source-gem
           path: pkg/*.gem
           retention-days: 1
 
-  compile_native_gems:
-    name: Compile native gem
-    needs: build_gem
+  build_native_gems:
+    name: Build native gem (${{ matrix.platform }})
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-24.04
-            platform: x86_64-linux
-            ruby: "3.4"
-          - os: ubuntu-24.04-arm
-            platform: aarch64-linux
-            ruby: "3.4"
-          - os: macos-latest
-            platform: arm64-darwin
-            ruby: "3.4"
-    runs-on: ${{ matrix.os }}
+        platform:
+          - x86_64-linux
+          - aarch64-linux
+          - x86_64-darwin
+          - arm64-darwin
+          - x64-mingw-ucrt
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: ruby/setup-ruby-pkgs@v1
+      - uses: actions/checkout@v6.0.2
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.ruby }}
-
-      - name: Install gem-compiler
-        run: gem install gem-compiler
-
-      - name: Download source gem
-        uses: actions/download-artifact@v4
+          ruby-version: 3.4
+          bundler-cache: true
+      - name: Build native gems
+        run: bundle exec rb-sys-dock --platform ${{ matrix.platform }} --build
+      - name: Upload native gems
+        uses: actions/upload-artifact@v7.0.0
         with:
-          name: distributing_iterator.gem
-          path: pkg/
-
-      - name: Compile gem
-        run: |
-          SOURCE_GEM=$(ls pkg/*.gem | grep -v -- '-x86_64-linux\|aarch64-linux\|arm64-darwin')
-          gem compile $SOURCE_GEM --prune
-
-      - name: Upload compiled gem
-        uses: actions/upload-artifact@v4
-        with:
-          name: distributing_iterator-${{ matrix.platform }}.gem
-          path: ./*.gem
+          name: native-gem-${{ matrix.platform }}
+          path: pkg/*-${{ matrix.platform }}.gem
           retention-days: 1
 
   release:
     name: Create GitHub Release
-    needs: compile_native_gems
+    needs:
+      - build_source_gem
+      - build_native_gems
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
-
       - name: Extract version
         id: extract_version
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${VERSION#v}
           echo "GEM_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           path: artifacts
-
-      - name: Rename gem files with version
-        run: |
-          mkdir -p release_gems
-          for gem in artifacts/distributing_iterator-*.gem/*.gem; do
-            # Extract platform from the original filename
-            platform=$(basename $gem | sed -E 's/distributing_iterator-([^-]+-[^-]+)\.gem/\1/')
-            
-
-            target_filename="distributing_iterator-${GEM_VERSION}-${platform}.gem"
-            target_path="release_gems/$target_filename"
-            mv "$gem" "$target_path"
-          done
-          # Move source gem to release_gems directory
-          mv artifacts/distributing_iterator.gem/*.gem release_gems/distributing_iterator-${GEM_VERSION}.gem
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.GEM_VERSION }}
-          files: release_gems/*.gem
+          tag_name: ${{ github.ref_name }}
+          name: distributing_iterator ${{ env.GEM_VERSION }}
+          files: artifacts/**/*.gem
           generate_release_notes: true

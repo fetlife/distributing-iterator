@@ -37,7 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rake-compiler", "~> 1.2"
   spec.add_development_dependency "minitest", "~> 5.0"
-  spec.required_rubygems_version = Gem::Requirement.new(">= 3.4.0") if spec.respond_to? :required_rubygems_version=
 
   spec.metadata = {
     "github_repo" => "ssh://github.com/fetlife/distributing-iterator",

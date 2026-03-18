@@ -22,3 +22,4 @@ lib/distributing_iterator/distributing_iterator.dll
 
 pkg/
 .DS_Store
+Gemfile.lock

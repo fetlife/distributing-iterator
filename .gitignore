@@ -6,6 +6,13 @@ tmp/
 ext/distributing_iterator/Makefile
 ext/distributing_iterator/mkmf.log
 ext/distributing_iterator/.sitearchdir.time
+ext/distributing_iterator/.rb-sys
+ext/distributing_iterator/target/
+ext/distributing_iterator/*.bundle
+ext/distributing_iterator/*.bundle.dSYM
+ext/distributing_iterator/*.so
+ext/distributing_iterator/*.dll
+ext/distributing_iterator/*.dylib
 lib/distributing_iterator/distributing_iterator.bundle
 lib/distributing_iterator/distributing_iterator.so
 lib/distributing_iterator/distributing_iterator.dll

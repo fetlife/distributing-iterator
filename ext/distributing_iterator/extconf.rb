@@ -1,3 +1,9 @@
 # frozen_string_literal: true
 
-load File.expand_path("../../extconf.rb", __dir__)
+require "mkmf"
+require "rb_sys/mkmf"
+
+create_rust_makefile("distributing_iterator/distributing_iterator") do |config|
+  config.features = ["ruby_ext"]
+  config.profile = ENV.fetch("RB_SYS_CARGO_PROFILE", "release").to_sym
+end

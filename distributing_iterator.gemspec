@@ -13,22 +13,21 @@ Gem::Specification.new do |spec|
   spec.description = "Distributing Iterator"
   spec.homepage = "https://github.com/fetlife/distributing-iterator"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.platform = Gem::Platform::RUBY
 
   spec.files = Dir[
     "lib/**/*.rb",
     "ext/**/*",
-    "extconf.rb",
-    "src/**/*.rs",
-    "benches/**/*.rs",
     ".cargo/*",
     "Cargo.toml",
     "Cargo.lock",
     "README.md",
     "LICENSE"
-  ]
+  ].reject do |path|
+    path.match?(%r{\A(?:lib/distributing_iterator/(?:.*\.(?:bundle|so|dll|dylib))|ext/distributing_iterator/(?:Makefile|mkmf\.log|target/|.*\.(?:bundle|so|dll)))})
+  end
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]

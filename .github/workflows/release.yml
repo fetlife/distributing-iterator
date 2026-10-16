@@ -42,7 +42,8 @@ jobs:
           ruby-version: 3.4
           bundler-cache: true
       - name: Build native gems
-        run: bundle exec rb-sys-dock --platform ${{ matrix.platform }} --build
+        # Build only for the Rubies in the gemspec's required_ruby_version.
+        run: bundle exec rb-sys-dock --platform ${{ matrix.platform }} --ruby-versions '>= 3.3' --build
       - name: Upload native gems
         uses: actions/upload-artifact@v7.0.0
         with:

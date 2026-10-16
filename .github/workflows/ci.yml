@@ -47,4 +47,4 @@ jobs:
           ruby-version: "3.4"
           bundler-cache: true
       - name: Cross-build x64-mingw-ucrt gem
-        run: bundle exec rb-sys-dock --platform x64-mingw-ucrt --build
+        run: bundle exec rb-sys-dock --platform x64-mingw-ucrt --ruby-versions '>= 3.3' --build

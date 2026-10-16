@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.description = "Distributing Iterator"
   spec.homepage = "https://github.com/fetlife/distributing-iterator"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2"
+  spec.required_ruby_version = ">= 3.3"
 
   spec.platform = Gem::Platform::RUBY
 
